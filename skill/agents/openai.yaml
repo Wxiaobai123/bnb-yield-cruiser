@@ -1,0 +1,4 @@
+interface:
+  display_name: "BNB Yield Cruiser"
+  short_description: "Build Binance-native BNB yield plans and reminders"
+  default_prompt: "Use $bnb-yield-cruiser to build a Binance-native BNB allocation plan with Simple Earn, Launchpool, HODLer Airdrops, and Megadrop reminders."

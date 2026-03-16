@@ -1,0 +1,14 @@
+{
+  "balances": {
+    "BNB": 8,
+    "USDT": 3000
+  },
+  "liquidity_window_days": 7,
+  "risk_tolerance": "low",
+  "allow_locked_products": true,
+  "allow_advanced_products": false,
+  "wants_reminders": true,
+  "reminder_mode": "deadline_and_24h",
+  "prefers_bnb_native": true,
+  "now": "2026-03-10T09:00:00+08:00"
+}

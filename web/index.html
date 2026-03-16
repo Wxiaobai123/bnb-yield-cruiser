@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BNB 收益巡航官</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/styles.css?v=20260312-polish-2">
+  </head>
+  <body>
+    <div class="background-grid"></div>
+    <div class="glow glow-left"></div>
+    <div class="glow glow-right"></div>
+
+    <main class="page-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div>
+            <p class="brand-kicker">币安主题收益规划</p>
+            <h1>BNB 收益巡航官</h1>
+          </div>
+        </div>
+        <div class="topbar-badges">
+          <span>官方数据优先</span>
+          <span>公告机会监控</span>
+          <span>Telegram 提醒</span>
+          <span>日历提醒导出</span>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="hero-copy-badge" aria-hidden="true">
+            <span class="hero-copy-badge-kicker">配置结构</span>
+            <strong>流动性 / 核心 / 事件</strong>
+            <div class="hero-copy-badge-note">流动性预留 · 核心收益 · 事件捕捉</div>
+            <div class="hero-copy-badge-bars">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <p class="eyebrow">BNB 资产规划</p>
+          <h2>
+            <span class="hero-title-line">让闲置 BNB</span>
+            <span class="hero-title-line">变成一套更稳、</span>
+            <span class="hero-title-line">更懂时机的收益配置</span>
+          </h2>
+          <p class="hero-description">
+            收益数据优先走官方接口，活动机会优先看官方公告，再按你的流动性窗口、
+            风险偏好和锁仓接受度，自动拆成四个配置桶。
+          </p>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span>配置原则</span>
+              <strong>先保留流动性，再配置 BNB 原生收益</strong>
+            </div>
+            <div class="hero-stat">
+              <span>数据优先级</span>
+              <strong>官方 API &gt; 官方公告 &gt; 本地备用数据</strong>
+            </div>
+            <div class="hero-stat">
+              <span>参考输入</span>
+              <strong id="hero-reference-input">8 BNB + 3000 USDT / 7 天 / 低风险</strong>
+            </div>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="hero-panel-head">
+            <p class="panel-tag">决策逻辑</p>
+            <h3>收益分配逻辑</h3>
+          </div>
+          <div class="hero-metric">
+            <div class="hero-metric-index">01</div>
+            <div class="hero-metric-copy">
+              <span>四桶结构</span>
+              <strong>流动性预留 / 核心收益 / 事件捕捉 / 高级可选</strong>
+            </div>
+          </div>
+          <div class="hero-metric">
+            <div class="hero-metric-index">02</div>
+            <div class="hero-metric-copy">
+              <span>使用流程</span>
+              <strong>输入资产 -> 生成方案 -> 导出到日历</strong>
+            </div>
+          </div>
+          <div class="hero-metric">
+            <div class="hero-metric-index">03</div>
+            <div class="hero-metric-copy">
+              <span>安全边界</span>
+              <strong>不默认代客申购，不把第三方信号直接当成已确认事件</strong>
+            </div>
+          </div>
+          <div class="hero-note">
+            页面只提供建议与提醒，不自动执行操作。高风险产品仅在你主动开启后进入候选区。
+          </div>
+        </div>
+      </section>
+
+      <section id="scenario-stage" class="scenario-stage" aria-label="动态收益场景">
+        <div class="scenario-stage-head">
+          <div>
+            <p class="panel-tag">使用场景</p>
+            <h3>用真实场景理解配置思路</h3>
+            <p>这里整理了 3 个常见使用场景，你可以手动切换查看不同目标、配置重点和提醒节奏，并一键带入左侧表单。</p>
+          </div>
+          <div class="scenario-controls">
+            <button id="scenario-prev" class="secondary-button scenario-nav" type="button" aria-label="上一场景">上一场景</button>
+            <div id="scenario-dots" class="scenario-dots" aria-label="场景切换"></div>
+            <button id="scenario-next" class="secondary-button scenario-nav" type="button" aria-label="下一场景">下一场景</button>
+          </div>
+        </div>
+        <div class="scenario-stage-body">
+          <div id="scenario-visual" class="scenario-visual"></div>
+          <div id="scenario-content" class="scenario-content"></div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <form id="planner-form" class="planner-panel" autocomplete="off">
+          <div class="panel-head">
+            <p class="panel-tag">策略输入</p>
+            <h3>配置条件</h3>
+            <p>输入资产、流动性需求和产品偏好，生成一份更贴近实际使用方式的收益方案。</p>
+          </div>
+
+          <div class="preset-panel">
+            <div class="preset-head">
+              <span>常用预设</span>
+              <strong>先选偏好，再调整细节</strong>
+            </div>
+            <div class="preset-actions">
+              <button class="preset-chip is-active" type="button" data-preset="conservative">保守收益</button>
+              <button class="preset-chip" type="button" data-preset="event">活动优先</button>
+              <button class="preset-chip" type="button" data-preset="advanced">进阶探索</button>
+            </div>
+            <div id="preset-status" class="preset-status">
+              当前预设：保守收益。优先兼顾流动性、基础收益和官方活动资格。
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <label>
+              <span>BNB 持仓</span>
+              <input name="bnb" type="number" min="0" step="0.0001" value="8" autocomplete="off">
+            </label>
+            <label>
+              <span>USDT 持仓</span>
+              <input name="usdt" type="number" min="0" step="0.01" value="3000" autocomplete="off">
+            </label>
+            <label>
+              <span>流动性窗口（天）</span>
+              <input name="liquidity_window_days" type="number" min="1" step="1" value="7" autocomplete="off">
+            </label>
+            <label>
+              <span>风险偏好</span>
+              <select name="risk_tolerance">
+                <option value="low" selected>低风险</option>
+                <option value="medium">中风险</option>
+                <option value="high">高风险</option>
+              </select>
+            </label>
+            <label>
+              <span>数据模式</span>
+              <select name="mode">
+                <option value="auto">自动选择</option>
+                <option value="sample" selected>示例数据</option>
+                <option value="live">实时数据</option>
+              </select>
+            </label>
+            <label>
+              <span>方案时间</span>
+              <input name="now" type="datetime-local" value="" autocomplete="off">
+            </label>
+            <label class="field-wide">
+              <span>提醒策略</span>
+              <select name="reminder_mode">
+                <option value="deadline" selected>仅截止提醒</option>
+                <option value="deadline_and_24h">截止前 24 小时 + 截止提醒</option>
+                <option value="deadline_and_1h">截止前 1 小时 + 截止提醒</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="balance-tools">
+            <button id="sync-balances" class="secondary-button" type="button" disabled>读取资产概览</button>
+            <div id="balance-status" class="balance-status">
+              当前使用手动输入。连接实时 API 后，可以读取现货、Simple Earn 活期和已锁仓概览。默认带入口径为可调度资产，你仍可继续手动修改。
+            </div>
+            <div id="asset-overview" class="asset-overview"></div>
+          </div>
+
+          <div class="toggle-grid">
+            <label class="toggle">
+              <input name="allow_locked_products" type="checkbox" checked>
+              <span>允许锁仓方案</span>
+            </label>
+            <label class="toggle">
+              <input name="allow_advanced_products" type="checkbox">
+              <span>允许高级方案</span>
+            </label>
+            <label class="toggle">
+              <input name="wants_reminders" type="checkbox" checked>
+              <span>生成日历提醒</span>
+            </label>
+            <label class="toggle">
+              <input name="prefers_bnb_native" type="checkbox" checked>
+              <span>优先 BNB 原生机会</span>
+            </label>
+            <label class="toggle">
+              <input name="skip_public_events" type="checkbox">
+              <span>跳过公告刷新</span>
+            </label>
+          </div>
+
+          <div class="panel-actions">
+            <button class="primary-button" type="submit">生成收益方案</button>
+            <button id="download-ics" class="secondary-button" type="button" disabled>导出到日历</button>
+          </div>
+
+          <div id="sidebar-reference-input" class="sidebar-note">
+            当前输入：8 BNB + 3000 USDT · 7 天 · 低风险。
+          </div>
+
+          <section class="telegram-panel">
+            <div class="telegram-head">
+              <p class="panel-tag">通知设置</p>
+              <h4>连接 Telegram 通知</h4>
+              <p>保存 Bot Token 和 Chat ID，用于发送测试消息或推送当前方案。</p>
+            </div>
+
+            <div class="telegram-grid">
+              <label>
+                <span>Bot Token</span>
+                <input id="tg-bot-token" class="masked-token-input" type="text" placeholder="123456:ABCDEF..." autocomplete="off" autocapitalize="off" spellcheck="false">
+              </label>
+              <label>
+                <span>Chat ID</span>
+                <input id="tg-chat-id" type="text" placeholder="-100xxxx 或你的用户 ID" autocomplete="off">
+              </label>
+            </div>
+
+            <div class="telegram-actions">
+              <button id="tg-save" class="primary-button" type="button">连接 Telegram</button>
+              <button id="tg-test" class="secondary-button" type="button">测试消息</button>
+              <button id="tg-push" class="secondary-button" type="button">推送当前方案</button>
+              <button id="tg-disconnect" class="secondary-button" type="button">断开连接</button>
+            </div>
+
+            <div id="tg-status" class="telegram-status">
+              未连接 Telegram。填写 Bot Token 和 Chat ID 后可发送测试消息。
+            </div>
+          </section>
+        </form>
+
+        <section class="results-panel">
+          <div class="panel-head result-head">
+            <div>
+              <p class="panel-tag">方案输出</p>
+              <h3>收益方案总览</h3>
+              <p>集中查看配置建议、数据来源、未纳入原因和提醒安排。</p>
+            </div>
+            <div class="result-head-note breathe-amber">当前结果</div>
+          </div>
+
+          <div id="yield-strip" class="yield-strip"></div>
+          <div id="summary" class="summary-strip"></div>
+          <div id="warnings" class="message-stack"></div>
+          <div id="next-actions" class="next-actions"></div>
+          <div id="allocations" class="card-grid"></div>
+
+          <div class="split-grid">
+            <div class="result-column">
+              <h4>暂未纳入</h4>
+              <div id="excluded" class="list-stack"></div>
+            </div>
+            <div class="result-column">
+              <h4>提醒安排</h4>
+              <div id="reminders" class="list-stack"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="/app.js?v=20260312-polish-2" defer></script>
+  </body>
+</html>
