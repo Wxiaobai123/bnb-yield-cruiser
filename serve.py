@@ -39,7 +39,7 @@ def _env_flag(name: str, default: bool = False) -> bool:
 PUBLIC_DEMO = _env_flag("PUBLIC_DEMO", default=False)
 TELEGRAM_FEATURE_ENABLED = _env_flag("ENABLE_TELEGRAM", default=not PUBLIC_DEMO)
 PUBLIC_DEMO_NOTICE = (
-    "当前为公开演示版：默认使用示例数据与公开事件源，不接收个人 Binance 或 Telegram 凭证。"
+    "当前为公开演示版：可直接体验规划逻辑、收益测算与执行流程。为保护隐私，不接收个人 Binance 或 Telegram 凭证。"
 )
 
 

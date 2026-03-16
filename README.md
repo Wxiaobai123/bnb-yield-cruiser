@@ -1,5 +1,14 @@
 # BNB Yield Cruiser
 
+[Live Demo](https://bnb-yield-cruiser.onrender.com) | [Deploy to Render](https://dashboard.render.com/blueprint/new?repo=https%3A%2F%2Fgithub.com%2FWxiaobai123%2Fbnb-yield-cruiser) | [GitHub Repository](https://github.com/Wxiaobai123/bnb-yield-cruiser)
+
+Safe public demo mode:
+
+- sample data by default
+- official public event monitoring when available
+- no personal Binance credentials
+- no public Telegram credential collection
+
 BNB Yield Cruiser is a Binance-native allocation copilot for BNB and idle funds.
 
 It helps users balance three things at the same time:
