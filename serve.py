@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -28,6 +29,36 @@ DEFAULT_OPPORTUNITIES = str(ROOT / "data" / "opportunities.sample.json")
 TELEGRAM_CONFIG = str(ROOT / "data" / "telegram_config.json")
 
 
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+PUBLIC_DEMO = _env_flag("PUBLIC_DEMO", default=False)
+TELEGRAM_FEATURE_ENABLED = _env_flag("ENABLE_TELEGRAM", default=not PUBLIC_DEMO)
+PUBLIC_DEMO_NOTICE = (
+    "当前为公开演示版：默认使用示例数据与公开事件源，不接收个人 Binance 或 Telegram 凭证。"
+)
+
+
+def _telegram_available() -> bool:
+    return TELEGRAM_FEATURE_ENABLED and not PUBLIC_DEMO
+
+
+def _safe_telegram_status() -> dict:
+    if not _telegram_available():
+        return {
+            "connected": False,
+            "enabled": False,
+            "chat_id": "",
+            "masked_token": "",
+            "source": "disabled",
+        }
+    return telegram_status(TELEGRAM_CONFIG)
+
+
 class DemoHandler(BaseHTTPRequestHandler):
     server_version = "BNBYieldCruiserHTTP/0.1"
 
@@ -47,13 +78,23 @@ class DemoHandler(BaseHTTPRequestHandler):
                 {
                     "ok": True,
                     "live_credentials": has_live_credentials(),
-                    "telegram": telegram_status(TELEGRAM_CONFIG),
+                    "telegram": _safe_telegram_status(),
+                    "telegram_available": _telegram_available(),
+                    "public_demo": PUBLIC_DEMO,
+                    "public_demo_notice": PUBLIC_DEMO_NOTICE if PUBLIC_DEMO else "",
                     "time": datetime.now().isoformat(),
                 }
             )
             return
         if parsed.path == "/api/telegram/status":
-            self._send_json({"ok": True, "telegram": telegram_status(TELEGRAM_CONFIG)})
+            self._send_json(
+                {
+                    "ok": True,
+                    "telegram": _safe_telegram_status(),
+                    "telegram_available": _telegram_available(),
+                    "public_demo": PUBLIC_DEMO,
+                }
+            )
             return
         if parsed.path in {"/api/binance/spot-balances", "/api/binance/asset-overview"}:
             try:
@@ -96,6 +137,16 @@ class DemoHandler(BaseHTTPRequestHandler):
             return
 
         try:
+            if parsed.path.startswith("/api/telegram/") and not _telegram_available():
+                self._send_json(
+                    {
+                        "ok": False,
+                        "error": "公开演示版已关闭 Telegram 连接与推送能力，请在本地自托管环境中启用。",
+                    },
+                    status=HTTPStatus.FORBIDDEN,
+                )
+                return
+
             if parsed.path == "/api/telegram/connect":
                 config = save_telegram_config(
                     TELEGRAM_CONFIG,
@@ -107,7 +158,7 @@ class DemoHandler(BaseHTTPRequestHandler):
                     {
                         "ok": True,
                         "message": "Telegram 已连接，可以发送测试消息了。",
-                        "telegram": telegram_status(TELEGRAM_CONFIG),
+                        "telegram": _safe_telegram_status(),
                         "chat_id": config.chat_id,
                     }
                 )
@@ -119,7 +170,7 @@ class DemoHandler(BaseHTTPRequestHandler):
                     {
                         "ok": True,
                         "message": "Telegram 连接已断开。",
-                        "telegram": telegram_status(TELEGRAM_CONFIG),
+                        "telegram": _safe_telegram_status(),
                     }
                 )
                 return
@@ -132,7 +183,7 @@ class DemoHandler(BaseHTTPRequestHandler):
                         "ok": True,
                         "message": "测试消息已发送到 Telegram。",
                         "message_id": result.get("message_id"),
-                        "telegram": telegram_status(TELEGRAM_CONFIG),
+                        "telegram": _safe_telegram_status(),
                     }
                 )
                 return
@@ -147,7 +198,7 @@ class DemoHandler(BaseHTTPRequestHandler):
                         "ok": True,
                         "message": "当前收益方案已推送到 Telegram。",
                         "message_id": result.get("message_id"),
-                        "telegram": telegram_status(TELEGRAM_CONFIG),
+                        "telegram": _safe_telegram_status(),
                         "preview": build_plan_notification(plan),
                     }
                 )
@@ -157,7 +208,10 @@ class DemoHandler(BaseHTTPRequestHandler):
             body["ok"] = True
             body["ics_content"] = build_ics_text(plan.reminders) if plan.reminders else ""
             body["ics_filename"] = "bnb-yield-cruiser-reminders.ics"
-            body["telegram"] = telegram_status(TELEGRAM_CONFIG)
+            body["telegram"] = _safe_telegram_status()
+            body["telegram_available"] = _telegram_available()
+            body["public_demo"] = PUBLIC_DEMO
+            body["public_demo_notice"] = PUBLIC_DEMO_NOTICE if PUBLIC_DEMO else ""
             self._send_json(body)
         except KeyError as exc:
             self.send_error(HTTPStatus.BAD_REQUEST, f"Missing field: {exc}")
@@ -202,10 +256,11 @@ class DemoHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    host = "127.0.0.1"
-    port = 8765
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", "8765"))
     server = ThreadingHTTPServer((host, port), DemoHandler)
-    print(f"BNB Yield Cruiser demo server running at http://{host}:{port}")
+    display_host = "127.0.0.1" if host == "0.0.0.0" else host
+    print(f"BNB Yield Cruiser demo server running at http://{display_host}:{port}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

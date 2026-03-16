@@ -918,6 +918,23 @@ body {
   line-height: 1.65;
 }
 
+.demo-banner {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 196, 0, 0.22);
+  background:
+    linear-gradient(135deg, rgba(255, 196, 0, 0.12), rgba(255, 196, 0, 0.03)),
+    rgba(15, 18, 24, 0.86);
+  color: rgba(255, 241, 189, 0.92);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.demo-banner.is-hidden {
+  display: none;
+}
+
 @keyframes scenario-bar-grow {
   from {
     width: 0;
@@ -936,6 +953,10 @@ body {
   background: var(--panel-alt);
   border-radius: 22px;
   padding: 16px;
+}
+
+.telegram-panel.is-disabled {
+  opacity: 0.72;
 }
 
 .telegram-head h4 {

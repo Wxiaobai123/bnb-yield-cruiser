@@ -85,6 +85,29 @@ Open:
 http://127.0.0.1:8765
 ```
 
+## Public Demo Deployment
+
+This repository includes a ready-to-deploy `render.yaml` Blueprint for Render.
+
+The public demo configuration is intentionally safer than local self-hosting:
+
+- `PUBLIC_DEMO=true`
+- `ENABLE_TELEGRAM=false`
+- no Binance credentials are required
+
+That means the hosted demo:
+
+- uses sample data by default
+- can still try official public announcement data
+- does not accept personal Telegram credentials
+- does not expose private Binance account access
+
+One-click Blueprint setup:
+
+```text
+https://render.com/deploy?repo=https://github.com/Wxiaobai123/bnb-yield-cruiser
+```
+
 ### 3. Run the CLI planner
 
 ```bash

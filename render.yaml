@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: bnb-yield-cruiser
+    runtime: python
+    plan: free
+    region: singapore
+    autoDeploy: false
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 serve.py
+    healthCheckPath: /api/health
+    envVars:
+      - key: PUBLIC_DEMO
+        value: "true"
+      - key: ENABLE_TELEGRAM
+        value: "false"
+

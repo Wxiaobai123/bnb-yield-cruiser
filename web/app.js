@@ -23,6 +23,8 @@ const tgTestBtn = document.querySelector("#tg-test");
 const tgPushBtn = document.querySelector("#tg-push");
 const tgDisconnectBtn = document.querySelector("#tg-disconnect");
 const tgStatusEl = document.querySelector("#tg-status");
+const telegramPanelEl = document.querySelector("#telegram-panel");
+const demoBannerEl = document.querySelector("#demo-banner");
 const scenarioStageEl = document.querySelector("#scenario-stage");
 const scenarioVisualEl = document.querySelector("#scenario-visual");
 const scenarioContentEl = document.querySelector("#scenario-content");
@@ -42,6 +44,9 @@ let telegramState = {
 };
 let healthState = {
   live_credentials: false,
+  public_demo: false,
+  telegram_available: true,
+  public_demo_notice: ""
 };
 let currentScenarioIndex = 0;
 let scenarioIntervalId = 0;
@@ -470,14 +475,21 @@ function renderTelegramStatus(status = telegramState, flashText = "", flashLevel
     source: status.source || "none"
   };
 
-  tgTestBtn.disabled = !telegramState.connected;
-  tgPushBtn.disabled = !telegramState.connected;
-  tgDisconnectBtn.disabled = !telegramState.connected && telegramState.source !== "env";
+  const telegramDisabled = !healthState.telegram_available;
+  tgBotTokenEl.disabled = telegramDisabled;
+  tgChatIdEl.disabled = telegramDisabled;
+  tgSaveBtn.disabled = telegramDisabled;
+  tgTestBtn.disabled = telegramDisabled || !telegramState.connected;
+  tgPushBtn.disabled = telegramDisabled || !telegramState.connected;
+  tgDisconnectBtn.disabled = telegramDisabled || (!telegramState.connected && telegramState.source !== "env");
 
   let className = "telegram-status";
   let text = "未连接 Telegram。填写 Bot Token 和 Chat ID 后即可发送测试消息。";
 
-  if (telegramState.connected) {
+  if (telegramDisabled) {
+    className += " is-warning";
+    text = "公开演示版已关闭 Telegram 连接与消息推送。如需完整体验，请在本地自托管环境中启用。";
+  } else if (telegramState.connected) {
     className += " is-connected";
     text = `已连接 Telegram（${formatTelegramSource(telegramState.source)}）\nChat ID：${telegramState.chat_id}\nToken：${telegramState.masked_token}`;
   }
@@ -489,6 +501,19 @@ function renderTelegramStatus(status = telegramState, flashText = "", flashLevel
 
   tgStatusEl.className = className;
   tgStatusEl.textContent = text;
+}
+
+function renderDemoBanner() {
+  if (!demoBannerEl) return;
+  if (!healthState.public_demo) {
+    demoBannerEl.classList.add("is-hidden");
+    demoBannerEl.textContent = "";
+    return;
+  }
+  demoBannerEl.classList.remove("is-hidden");
+  demoBannerEl.textContent =
+    healthState.public_demo_notice ||
+    "当前为公开演示版：默认使用示例数据与公开事件源，不接收个人 Binance 或 Telegram 凭证。";
 }
 
 function renderBalanceStatus(text, level = "") {
@@ -1412,6 +1437,7 @@ downloadIcsBtn.addEventListener("click", () => {
 });
 
 tgSaveBtn.addEventListener("click", async () => {
+  if (!healthState.telegram_available) return;
   try {
     const payload = await telegramRequest("/api/telegram/connect", {
       bot_token: tgBotTokenEl.value,
@@ -1426,6 +1452,7 @@ tgSaveBtn.addEventListener("click", async () => {
 });
 
 tgTestBtn.addEventListener("click", async () => {
+  if (!healthState.telegram_available) return;
   try {
     const payload = await telegramRequest("/api/telegram/test");
     renderTelegramStatus(payload.telegram, payload.message || "测试消息已发送。", "connected");
@@ -1435,6 +1462,7 @@ tgTestBtn.addEventListener("click", async () => {
 });
 
 tgPushBtn.addEventListener("click", async () => {
+  if (!healthState.telegram_available) return;
   try {
     const payload = await telegramRequest("/api/telegram/push-plan", formPayload());
     renderTelegramStatus(payload.telegram, payload.message || "当前方案已发送到 Telegram。", "connected");
@@ -1444,6 +1472,7 @@ tgPushBtn.addEventListener("click", async () => {
 });
 
 tgDisconnectBtn.addEventListener("click", async () => {
+  if (!healthState.telegram_available) return;
   try {
     const payload = await telegramRequest("/api/telegram/disconnect");
     tgBotTokenEl.value = "";
@@ -1517,6 +1546,8 @@ runPlanner().catch((error) => {
 fetch("/api/telegram/status")
   .then((response) => parseJsonResponse(response))
   .then((payload) => {
+    healthState.telegram_available = payload.telegram_available !== false;
+    healthState.public_demo = Boolean(payload.public_demo);
     if (payload.ok && payload.telegram) {
       renderTelegramStatus(payload.telegram);
     }
@@ -1529,6 +1560,14 @@ fetch("/api/health")
   .then((response) => parseJsonResponse(response))
   .then((payload) => {
     healthState.live_credentials = Boolean(payload.live_credentials);
+    healthState.public_demo = Boolean(payload.public_demo);
+    healthState.telegram_available = payload.telegram_available !== false;
+    healthState.public_demo_notice = payload.public_demo_notice || "";
+    renderDemoBanner();
+    if (telegramPanelEl) {
+      telegramPanelEl.classList.toggle("is-disabled", !healthState.telegram_available);
+    }
+    renderTelegramStatus(telegramState);
     syncBalancesBtn.disabled = !healthState.live_credentials;
     if (healthState.live_credentials) {
       renderBalanceStatus("已检测到实时 API 凭证。可以读取现货、Earn 活期和已锁仓概览；默认带入口径为可调度资产。", "connected");
